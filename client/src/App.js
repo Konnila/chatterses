@@ -48,9 +48,6 @@ class App extends Component {
           </div>
 
           <Chat userName={userName} />
-          <div className="text container" id="chat-container">
-
-          </div>
           {
 
             /* <SelectedFoods

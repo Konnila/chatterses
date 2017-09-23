@@ -31,7 +31,10 @@ const COLUMNS = [
 ];
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+  socket.on('message', function(msg, user){
+    console.log('message: ' + msg + " user: " + user);
+    io.emit('message', msg, user);
+  });
 });
 
 // io.listen(socketIoPort);
