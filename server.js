@@ -11,6 +11,9 @@ const db = new sqlite.Database(filebuffer);
 
 const app = express();
 
+var mongoose = require('mongoose');
+var mongoDB = 'mongodb://<conels>:<conels123>@ds040167.mlab.com:40167/chatter-db';
+
 var server = http.createServer(app);
 
 app.set('port', (process.env.PORT || 3001));
