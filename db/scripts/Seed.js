@@ -1,17 +1,9 @@
-// var userArgs = process.argv.slice(2);
-
-// if (!userArgs[0].startsWith('mongodb://')) {
-//     console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
-//     return
-// }
-
+//FIXME: remove hardcode, its ok for now 
 const dbaddr = 'mongodb://conels:conels123@ds040167.mlab.com:40167/chatter-db';
 
-console.log("oh yea");
-const async = require('async');
-console.log("got async");
-let Channel = require('../models/channel.js');
 
+const async = require('async');
+let Channel = require('../models/channel.js');
 let mongoose = require('mongoose');
 
 let mongoDB = dbaddr;

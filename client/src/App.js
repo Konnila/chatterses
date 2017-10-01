@@ -8,18 +8,6 @@ class App extends Component {
     userName: ""
   };
 
-  // removeFoodItem = itemIndex => {
-  //   const filteredFoods = this.state.selectedFoods.filter(
-  //     (item, idx) => itemIndex !== idx
-  //   );
-  //   this.setState({ selectedFoods: filteredFoods });
-  // };
-
-  // addFood = food => {
-  //   const newFoods = this.state.selectedFoods.concat(food);
-  //   this.setState({ selectedFoods: newFoods });
-  // };
-
   handleChangeUsername = e => {
     const value = e.target.value;
 
@@ -37,7 +25,7 @@ class App extends Component {
         
         <div className="ui container">
           <h2> Welcome to Chat App{userName !== '' ? ', ' + userName : ""}! </h2>
-          <div className="ui top attached block header">
+          <div className="ui top attached block header row">
             <div className="ui action labeled input">
               <div style={{backgroundColor: '#f3f4f5'}} className="ui label">
                 Nickname

@@ -11,3 +11,14 @@ body {
 #food-search {
   margin-top: 5em;
 }
+
+#messages-container {
+  border: 5px solid aliceblue;
+  border-radius: 2px;
+  height: 500px;
+  margin: 0px;
+}
+
+.left-border {
+  border-left: 5px solid aliceblue;
+}

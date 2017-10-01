@@ -22,3 +22,7 @@
   min-height: 500px;
   max-height: 1500px;
 }
+
+#messages-container {
+  height: 1000px;
+}
