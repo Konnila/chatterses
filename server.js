@@ -31,9 +31,9 @@ if (process.env.NODE_ENV === 'production') {
 
 
 io.on('connection', function(socket){
-  socket.on('message', function(msg, user){
-    console.log('message: ' + msg + " user: " + user);
-    io.emit('message', msg, user);
+  socket.on('message', function(msg, user, channel){
+    console.log('message: ' + msg + " user: " + user + " on channel: " + channel);
+    io.emit('message', msg, user, channel);
   });
 });
 
@@ -41,10 +41,6 @@ io.on('connection', function(socket){
 //routes
 var routes_channels = require('./routes/channels');
 app.use('/channels', routes_channels);
-
-// app.get('/channels', function (req, res) {
-//   res.send('channels')
-// });
 
 
 io.listen(server);

@@ -20,8 +20,8 @@ class Chat extends Component {
         this.socket = openSocket(currentUrl);
         var renderFunction = this.messageReceived;
 
-        this.socket.on('message', function(msg, user) {
-            renderFunction(msg, user);
+        this.socket.on('message', function(msg, user, channel) {
+            renderFunction(msg, user, channel);
         });
     }
 
@@ -38,8 +38,12 @@ class Chat extends Component {
         console.log(this.state);
     }
 
-    messageReceived = (msg,user) => {
-        console.log("MESSAGE FROM BACKEND - message: " + msg + " user: " + user);
+    messageReceived = (msg,user, channel) => {
+        console.log("MESSAGE FROM BACKEND - message: " + msg + " user: " + user + " channel: " + channel);
+
+        if(channel !== this.state.activeChannel)
+            return;
+
         const updatedMessages = this.state.messages;
         const newEntry = {
             user: user,
@@ -53,13 +57,13 @@ class Chat extends Component {
         })
     }
 
-    messagePosted = (msg, user) => {
+    messagePosted = (msg, user, channel) => {
         if(!user || user === '') {
             alert("Select username first!");
             return;
         } 
-
-        this.socket.emit('message', msg, user);
+        console.log("channel:: " + channel);
+        this.socket.emit('message', msg, user, channel);
         this.setState({
             messageBuffer: ''
         });
@@ -77,7 +81,8 @@ class Chat extends Component {
 
     switchActiveChannel = (toChannelIndex) => {
         this.setState({
-            activeChannel: toChannelIndex
+            activeChannel: toChannelIndex,
+            messages: []
         });
     }
 
@@ -120,8 +125,8 @@ class Chat extends Component {
                         </div>
 
                         <div className="ui action input row" id="chat-message-input">
-                            <input value={message} type="text" onKeyUp={e => e.key === "Enter" ? this.messagePosted(message, user) : null} placeholder="Message..." onChange={ this.messageUpdated } />
-                            <button className="ui button" onClick={e => this.messagePosted(message, user)}> Post </button>
+                            <input value={message} type="text" onKeyUp={e => e.key === "Enter" ? this.messagePosted(message, user, activeChannel) : null} placeholder="Message..." onChange={ this.messageUpdated } />
+                            <button className="ui button" onClick={e => this.messagePosted(message, user, activeChannel)}> Post </button>
                         </div>
                     </div>
                 </div>     
