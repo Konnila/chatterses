@@ -1,21 +1,41 @@
 import React, { Component } from "react";
 import openSocket from 'socket.io-client';
 import Message from './Message';
+import Channel from './Channel';
 
 class Chat extends Component {
     state = {
         messageBuffer: "",
-        messages: []
+        messages: [],
+        channels: [],
+        activeChannel: null
     }
 
     componentDidMount() {
         const currentUrl = window.location.href;
+
+        //get channels
+        fetch(currentUrl + '/channels').then(res => res.json()).then((channels) => this.updateChannels(channels));
+
         this.socket = openSocket(currentUrl);
         var renderFunction = this.messageReceived;
 
         this.socket.on('message', function(msg, user) {
             renderFunction(msg, user);
         });
+    }
+
+    updateChannels = (channels) => {
+        console.log(channels);
+        this.setState({
+            channels: this.state.channels.concat(channels)
+        });
+
+        this.setState({
+            activeChannel: 0
+        });
+
+        console.log(this.state);
     }
 
     messageReceived = (msg,user) => {
@@ -34,8 +54,15 @@ class Chat extends Component {
     }
 
     messagePosted = (msg, user) => {
-        console.log("message: " + msg, " user: " + user);
+        if(!user || user === '') {
+            alert("Select username first!");
+            return;
+        } 
+
         this.socket.emit('message', msg, user);
+        this.setState({
+            messageBuffer: ''
+        });
     }
     
     messageUpdated = e => {
@@ -44,60 +71,60 @@ class Chat extends Component {
         });
     }
 
+    isChannelActive = (toCheck, currentActive) => {
+        return toCheck === currentActive;
+    }
+
+    switchActiveChannel = (toChannelIndex) => {
+        this.setState({
+            activeChannel: toChannelIndex
+        });
+    }
+
     render() {
         const user = this.props.userName;
         const message = this.state.messageBuffer;
         const messages = this.state.messages;
+        const channels = this.state.channels;
+        const activeChannel = this.state.activeChannel;
+
+        var selfReference = this;
 
         return (
             <div>
                 {/* container for messages */}
                 <div id="messages-container" className="ui two column grid row"> 
                     <div className="four wide column">
-                        <div className="ui list">
-                            {/* make separate modules of channels */}
-                            <div className="item">
-                                <img className="ui avatar image" src="https://semantic-ui.com/images/avatar2/small/rachel.png"/>
-                                <div className="content">
-                                    <a className="header">Random-channel</a>
-                                    <div className="description">
-                                        <span>Channel description</span>
-                                    </div>
-                                </div>
+                        <div id="channels">
+                            <div className="ui list">
+                                {
+                                    channels.map(function (c, i) {
+                                        return <Channel key={i} onClick={e => selfReference.switchActiveChannel(i)} active={selfReference.isChannelActive(i, activeChannel)} 
+                                                    name={c.name} description={c.description ? c.description : ''} />
+                                    })
+                                }
                             </div>
-                            <div className="item">
-                                <img className="ui avatar image" src="https://semantic-ui.com/images/avatar2/small/rachel.png"/>
-                                <div className="content">
-                                    <a className="header">News</a>
-                                    <div className="description">
-                                        <span>What's up in the world</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="item">
-                                <img className="ui avatar image" src="https://semantic-ui.com/images/avatar2/small/rachel.png"/>
-                                <div className="content">
-                                    <a className="header">Development</a>
-                                    <div className="description">
-                                        <span>Join with other devs</span>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
+                        <div>
+                            <p className="text-center action-icon-container"> Add channel <i className="add square medium icon"></i></p>
+                        </div>
+                        
                     </div>
                     <div className="twelve wide column left-border">
-                    {
-                        messages.map(function (entry, i){
-                            return <Message key={i} user={entry.user} message={entry.message} />
-                        })
-                    }
+                        <div id="chat-messages">
+                        {
+                            messages.map(function (entry, i){
+                                return <Message key={i} user={entry.user} message={entry.message} />
+                            })
+                        }
+                        </div>
+
+                        <div className="ui action input row" id="chat-message-input">
+                            <input value={message} type="text" onKeyUp={e => e.key === "Enter" ? this.messagePosted(message, user) : null} placeholder="Message..." onChange={ this.messageUpdated } />
+                            <button className="ui button" onClick={e => this.messagePosted(message, user)}> Post </button>
+                        </div>
                     </div>
-                </div>
-                <div className="ui action input row">
-                    <input type="text" placeholder="Message..." onChange={ this.messageUpdated } />
-                    <button className="ui button" onClick={e => this.messagePosted(message, user)}> Post </button>
-                </div>
+                </div>     
             </div>
         );
     }

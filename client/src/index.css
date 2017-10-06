@@ -12,6 +12,8 @@ body {
   margin-top: 5em;
 }
 
+/* unique items */
+
 #messages-container {
   border: 5px solid aliceblue;
   border-radius: 2px;
@@ -19,6 +21,39 @@ body {
   margin: 0px;
 }
 
+#chat-messages, #channels {
+  height: 430px;
+  word-wrap: break-word;
+}
+
+#chat-message-input {
+  width: 100%;
+}
+
+
+/* classes */
+.active, .channel:hover {
+  background-color: lightcyan;
+  cursor: pointer;
+}
+
+/* utils */
+
 .left-border {
   border-left: 5px solid aliceblue;
 }
+
+.text-center {
+  text-align: center;
+}
+
+.action-icon-container {
+  opacity: 0.5;
+  font-size: 25px;
+}
+
+.action-icon-container:hover {
+  opacity: 1.0;
+  cursor: pointer;
+}
+

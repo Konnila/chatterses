@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 const ChannelSchema = Schema(
     {
         name: {type: String, required: true, max: 30},
+        description: {type: String, required: false, max: 30},
         created_at: {type: Date}
     }
 );

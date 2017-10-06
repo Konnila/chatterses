@@ -13,8 +13,8 @@ mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection 
 
 let channels = [];
 
-function createChannel(name, cb) {
-    const channelDetails = { name:name , created_at: new Date() };
+function createChannel(name, description, cb) {
+    const channelDetails = { name:name, description: description, created_at: new Date() };
     let channel = new Channel(channelDetails);
 
     channel.save(function (err) {
@@ -31,7 +31,13 @@ function createChannel(name, cb) {
 function createChannels(cb) {
     async.parallel([
         function(callback) {
-            createChannel('random', callback);
+            createChannel('Random', "Random discussion",callback);
+        },
+        function(callback) {
+            createChannel("News", "what's up in the world", callback);
+        },
+        function(callback) {
+            createChannel("Development", "Meet other developers", callback);
         }
     ], cb)
     
