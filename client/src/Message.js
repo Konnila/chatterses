@@ -17,8 +17,6 @@ class Message extends Component {
                         </div>
                     </div>
                 </div>
-                {/* <strong>{this.props.user}</strong> &nbsp;
-                <span>{this.props.message}</span> */}
             </div>
         );
     }
