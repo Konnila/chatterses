@@ -8,8 +8,6 @@ const filebuffer = fs.readFileSync('db/usda-nnd.sqlite3');
 
 const app = express();
 
-
-
 var mongoose = require('mongoose');
 const dbaddr = 'mongodb://conels:conels123@ds040167.mlab.com:40167/chatter-db';
 
@@ -38,9 +36,12 @@ io.on('connection', function(socket){
 });
 
 
-//routes
-var routes_channels = require('./routes/channels');
-app.use('/channels', routes_channels);
+if (process.env.NODE_ENV !== 'production') {
+  //routes
+  var routes_channels = require('./routes/channels');
+  app.use('/channels', routes_channels);
+}
+
 
 
 io.listen(server);
