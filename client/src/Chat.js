@@ -15,7 +15,7 @@ class Chat extends Component {
         const currentUrl = window.location.href;
 
         //get channels
-        fetch(currentUrl + '/channels').then(res => res.json()).then((channels) => this.updateChannels(channels));
+        fetch(currentUrl + 'channels').then(res => res.json()).then((channels) => this.updateChannels(channels));
 
         this.socket = openSocket(currentUrl);
         var renderFunction = this.messageReceived;
