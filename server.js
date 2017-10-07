@@ -35,14 +35,9 @@ io.on('connection', function(socket){
   });
 });
 
-
-if (process.env.NODE_ENV !== 'production') {
   //routes
   var routes_channels = require('./routes/channels');
   app.use('/channels', routes_channels);
-}
-
-
 
 io.listen(server);
 server.listen(app.get('port'));
