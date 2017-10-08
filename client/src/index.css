@@ -5,11 +5,7 @@ body {
 }
 
 .App {
-  margin-top: 7em;
-}
-
-#food-search {
-  margin-top: 5em;
+  margin-top: 2em;
 }
 
 /* unique items */
@@ -24,20 +20,34 @@ body {
 #chat-messages, #channels {
   height: 430px;
   word-wrap: break-word;
+  overflow: scroll;
 }
+
 
 #chat-message-input {
   width: 100%;
 }
 
 
-/* classes */
 .active, .channel:hover {
   background-color: lightcyan;
   cursor: pointer;
 }
 
+/* modal */
+
+.modal-form {
+  padding: 21px;
+}
+
+
 /* utils */
+
+
+.dimmed {
+  background-color: rgba(70,70,70, 0.55)
+}
+
 
 .left-border {
   border-left: 5px solid aliceblue;
@@ -57,3 +67,6 @@ body {
   cursor: pointer;
 }
 
+::-webkit-scrollbar { 
+  display: none; 
+}

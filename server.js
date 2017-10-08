@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const sqlite = require('sql.js');
 const io = require('socket.io')();
@@ -7,6 +8,7 @@ const http = require('http');
 const filebuffer = fs.readFileSync('db/usda-nnd.sqlite3');
 
 const app = express();
+app.use(bodyParser.json());
 
 var mongoose = require('mongoose');
 const dbaddr = 'mongodb://conels:conels123@ds040167.mlab.com:40167/chatter-db';
@@ -37,7 +39,9 @@ io.on('connection', function(socket){
 
   //routes
   var routes_channels = require('./routes/channels');
+  var routes_messages = require('./routes/messages');
   app.use('/channels', routes_channels);
+  app.use('/messages', routes_messages);
 
 io.listen(server);
 server.listen(app.get('port'));

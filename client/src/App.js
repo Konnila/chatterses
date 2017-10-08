@@ -16,7 +16,6 @@ class App extends Component {
     });
   }
 
-
   render() {
     // const { selectedFoods } = this.state;
     const userName = this.state.userName;
@@ -36,15 +35,7 @@ class App extends Component {
           </div>
 
           <Chat userName={userName} />
-          {
 
-            /* <SelectedFoods
-            foods={selectedFoods}
-            onFoodClick={this.removeFoodItem}
-          />
-          <FoodSearch onFoodClick={this.addFood} /> */
-          
-          }
         </div>
       </div>
     );

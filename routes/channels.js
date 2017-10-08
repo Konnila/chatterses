@@ -3,7 +3,10 @@ var router = express.Router();
 
 var channel_controller = require('../controllers/channelController');
 
-/* GET catalog home page. */
+// gets
 router.get('/', channel_controller.get_channels);
+
+// posts
+router.post('/add', channel_controller.add_channel)
 
 module.exports = router;

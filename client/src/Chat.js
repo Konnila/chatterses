@@ -2,20 +2,37 @@ import React, { Component } from "react";
 import openSocket from 'socket.io-client';
 import Message from './Message';
 import Channel from './Channel';
+import AddChannelModal from './AddChannelModal';
+import $ from 'jquery';
+import { fetchChannels, fetchMessages, messageAdd } from './Api';
 
 class Chat extends Component {
     state = {
         messageBuffer: "",
         messages: [],
         channels: [],
-        activeChannel: null
+        activeChannel: null,
+        channelAddModalVisible: false
     }
 
-    componentDidMount() {
+    constructor() {
+        super();
+
+        this.addChannel = this.addChannel.bind(this);
+        this.toggleModal = this.toggleModal.bind(this)
+    }
+
+     componentDidMount() {
         const currentUrl = window.location.href;
 
-        //get channels
-        fetch(currentUrl + 'channels').then(res => res.json()).then((channels) => this.updateChannels(channels));
+        //wait these first so we can initially get messages from first channel
+        fetchChannels(currentUrl + 'channels', (channels) => this.updateChannels(channels, 0));
+
+        console.log(this.state.channels);
+
+        if(this.state.channels.length > 0) {
+            fetchMessages(currentUrl, this.state.channels[0]._id, (msgsObject) => this.renderMessages(msgsObject));
+        }
 
         this.socket = openSocket(currentUrl);
         var renderFunction = this.messageReceived;
@@ -25,23 +42,10 @@ class Chat extends Component {
         });
     }
 
-    updateChannels = (channels) => {
-        console.log(channels);
-        this.setState({
-            channels: this.state.channels.concat(channels)
-        });
-
-        this.setState({
-            activeChannel: 0
-        });
-
-        console.log(this.state);
-    }
-
     messageReceived = (msg,user, channel) => {
         console.log("MESSAGE FROM BACKEND - message: " + msg + " user: " + user + " channel: " + channel);
 
-        if(channel !== this.state.activeChannel)
+        if(channel !== this.state.channels[this.state.activeChannel]._id)
             return;
 
         const updatedMessages = this.state.messages;
@@ -54,16 +58,39 @@ class Chat extends Component {
 
         this.setState({
             messages: updatedMessages
-        })
+        });
+    }
+
+    renderMessages = (messageDboArray) => {
+        if(!messageDboArray)
+            return;
+
+        const updatedMessages = this.state.messages;
+        for(var i = 0; i < messageDboArray.length; i++) {
+            const entry = {
+                user: messageDboArray[i].user,
+                message: messageDboArray[i].message
+            }
+
+            updatedMessages.push(entry);
+        }
+
+        this.setState({
+            messages: updatedMessages
+        });
     }
 
     messagePosted = (msg, user, channel) => {
         if(!user || user === '') {
             alert("Select username first!");
             return;
-        } 
-        console.log("channel:: " + channel);
+        }
+
+        const currentUrl = window.location.href;
+        messageAdd(currentUrl + 'messages/add', channel, msg, user, () => this.socket.emit('message', msg, user, channel))
+
         this.socket.emit('message', msg, user, channel);
+
         this.setState({
             messageBuffer: ''
         });
@@ -75,15 +102,63 @@ class Chat extends Component {
         });
     }
 
+
+
+    // channel related functions
+
     isChannelActive = (toCheck, currentActive) => {
         return toCheck === currentActive;
     }
 
-    switchActiveChannel = (toChannelIndex) => {
+    updateChannels = (channels, setActive = this.state.activeChannel) => {
+        console.log("channels in cb" + channels);
         this.setState({
-            activeChannel: toChannelIndex,
-            messages: []
+            channels: this.state.channels.concat(channels)
         });
+
+        this.setState({
+            activeChannel: setActive
+        });
+    }
+
+    addChannel(name, desc) {
+        console.log("parent called");
+        let newObjectInArray = [{name: name, description: desc}];
+
+        this.setState({
+            channels: this.state.channels.concat(newObjectInArray)
+        });
+    }
+
+    switchActiveChannel = (toChannelIndex) => {
+        if(toChannelIndex !== this.state.activeChannel) {
+            const currentUrl = window.location.href;
+
+            fetchMessages(currentUrl, this.state.channels[toChannelIndex]._id, (msgsObject) => this.renderMessages(msgsObject));
+
+            this.setState({
+                activeChannel: toChannelIndex,
+                messages: []
+            });
+        }
+    }
+
+    // modals
+
+    toggleModal = () => {
+        const newBool = !this.state.channelAddModalVisible;
+
+        console.log("toggling to: " + newBool);
+        this.setState({
+            channelAddModalVisible: newBool
+        });
+
+        if(newBool) {
+            $('body').addClass("dimmed");
+        }
+        else {
+            $('body').removeClass("dimmed");
+        }
     }
 
     render() {
@@ -91,7 +166,9 @@ class Chat extends Component {
         const message = this.state.messageBuffer;
         const messages = this.state.messages;
         const channels = this.state.channels;
+        console.log('channels: ' + channels);
         const activeChannel = this.state.activeChannel;
+        const showModal = this.state.channelAddModalVisible;
 
         var selfReference = this;
 
@@ -104,13 +181,15 @@ class Chat extends Component {
                             <div className="ui list">
                                 {
                                     channels.map(function (c, i) {
+                                        if(!c)
+                                            return null;
                                         return <Channel key={i} onClick={e => selfReference.switchActiveChannel(i)} active={selfReference.isChannelActive(i, activeChannel)} 
                                                     name={c.name} description={c.description ? c.description : ''} />
                                     })
                                 }
                             </div>
                         </div>
-                        <div>
+                        <div onClick={e => this.toggleModal()}>
                             <p className="text-center action-icon-container"> Add channel <i className="add square medium icon"></i></p>
                         </div>
                         
@@ -125,11 +204,13 @@ class Chat extends Component {
                         </div>
 
                         <div className="ui action input row" id="chat-message-input">
-                            <input value={message} type="text" onKeyUp={e => e.key === "Enter" ? this.messagePosted(message, user, activeChannel) : null} placeholder="Message..." onChange={ this.messageUpdated } />
-                            <button className="ui button" onClick={e => this.messagePosted(message, user, activeChannel)}> Post </button>
+                            <input value={message} type="text" onKeyUp={e => e.key === "Enter" ? this.messagePosted(message, user, channels[activeChannel]._id) : null} placeholder="Message..." onChange={ this.messageUpdated } />
+                            <button className="ui button" onClick={e => this.messagePosted(message, user, channels[activeChannel]._id)}> Post </button>
                         </div>
                     </div>
-                </div>     
+                </div>
+
+                <AddChannelModal addfn={this.addChannel} onClick={e => selfReference.toggleModal()} visible={showModal}/>
             </div>
         );
     }
