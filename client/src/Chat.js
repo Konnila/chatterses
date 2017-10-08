@@ -28,8 +28,6 @@ class Chat extends Component {
         //wait these first so we can initially get messages from first channel
         fetchChannels(currentUrl + 'channels', (channels) => this.updateChannels(channels, 0));
 
-        console.log(this.state.channels);
-
         if(this.state.channels.length > 0) {
             fetchMessages(currentUrl, this.state.channels[0]._id, (msgsObject) => this.renderMessages(msgsObject));
         }
@@ -43,8 +41,6 @@ class Chat extends Component {
     }
 
     messageReceived = (msg,user, channel) => {
-        console.log("MESSAGE FROM BACKEND - message: " + msg + " user: " + user + " channel: " + channel);
-
         if(channel !== this.state.channels[this.state.activeChannel]._id)
             return;
 
@@ -111,7 +107,6 @@ class Chat extends Component {
     }
 
     updateChannels = (channels, setActive = this.state.activeChannel) => {
-        console.log("channels in cb" + channels);
         this.setState({
             channels: this.state.channels.concat(channels)
         });
@@ -122,7 +117,6 @@ class Chat extends Component {
     }
 
     addChannel(name, desc) {
-        console.log("parent called");
         let newObjectInArray = [{name: name, description: desc}];
 
         this.setState({
@@ -148,7 +142,6 @@ class Chat extends Component {
     toggleModal = () => {
         const newBool = !this.state.channelAddModalVisible;
 
-        console.log("toggling to: " + newBool);
         this.setState({
             channelAddModalVisible: newBool
         });
@@ -166,7 +159,6 @@ class Chat extends Component {
         const message = this.state.messageBuffer;
         const messages = this.state.messages;
         const channels = this.state.channels;
-        console.log('channels: ' + channels);
         const activeChannel = this.state.activeChannel;
         const showModal = this.state.channelAddModalVisible;
 

@@ -1,14 +1,10 @@
 var Message = require('../db/models/message');
 
 exports.get_messages = function(req,res) {
-    console.log(req.params);
     Message.find({channel: req.params.channel}).then(m => res.json(m));
 };
 
 exports.add_message = function(req, res) {
-    console.log(req.body);
-    console.log("adding message");
-
     var message = new Message({
         message: req.body.message,
         user: req.body.user,
@@ -20,6 +16,6 @@ exports.add_message = function(req, res) {
         if (err) 
             res.send(err); 
         
-        res.send(req.body);   
+        res.send(req.body);
       });
 }
