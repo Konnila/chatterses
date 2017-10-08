@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import Chat from "./Chat";
-// import SelectedFoods from "./SelectedFoods";
-// import FoodSearch from "./FoodSearch";
 
 class App extends Component {
   state = {
