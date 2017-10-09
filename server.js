@@ -5,8 +5,6 @@ const sqlite = require('sql.js');
 const io = require('socket.io')();
 const http = require('http');
 
-const filebuffer = fs.readFileSync('db/usda-nnd.sqlite3');
-
 const app = express();
 app.use(bodyParser.json());
 
