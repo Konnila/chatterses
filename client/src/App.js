@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Chat from "./Chat";
 
 class App extends Component {
+  // State should be initialized in a constructor.
   state = {
     userName: ""
   };
@@ -19,7 +20,7 @@ class App extends Component {
     const userName = this.state.userName;
     return (
       <div className="App">
-        
+
         <div className="ui container">
           <h2> Welcome to Chat App{userName !== '' ? ', ' + userName : ""}! </h2>
           <div className="ui top attached block header row">
@@ -27,7 +28,10 @@ class App extends Component {
               <div style={{backgroundColor: '#f3f4f5'}} className="ui label">
                 Nickname
               </div>
+
+              {/* This is readable since it has clear variable names. Change all other places to look like this also. */}
               <input type="text" value={this.state.userName} onChange={this.handleChangeUsername}/>
+
               <div type="submit" className="ui violet button"> Change </div>
             </div>
           </div>

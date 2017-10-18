@@ -9,6 +9,9 @@ const app = express();
 app.use(bodyParser.json());
 
 var mongoose = require('mongoose');
+
+// This should be in app config (accessible via app.get) and not
+// hard-coded here.
 const dbaddr = 'mongodb://conels:conels123@ds040167.mlab.com:40167/chatter-db';
 
 mongoose.connect(dbaddr, {
@@ -16,6 +19,8 @@ mongoose.connect(dbaddr, {
 });
 
 var db = mongoose.connection;
+
+// Using custom function or lambda as an error handler would be more readable.
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var server = http.createServer(app);
@@ -30,7 +35,11 @@ if (process.env.NODE_ENV === 'production') {
 
 io.on('connection', function(socket){
   socket.on('message', function(msg, user, channel){
+    // String interpolation can be used here,
+    // e.g. `message: ${msg}`.
     console.log('message: ' + msg + " user: " + user + " on channel: " + channel);
+
+    // Message msg? Maybe you could use more describing event names.
     io.emit('message', msg, user, channel);
   });
 });
