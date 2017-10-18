@@ -1,4 +1,4 @@
-//FIXME: remove hardcode, its ok for now 
+//FIXME: remove hardcode, its ok for now
 const dbaddr = 'mongodb://conels:conels123@ds040167.mlab.com:40167/chatter-db';
 
 
@@ -29,6 +29,7 @@ function createChannel(name, description, cb) {
 }
 
 function createChannels(cb) {
+    // Are these used? If not, these should be removed.
     async.parallel([
         function(callback) {
             createChannel('Random', "Random discussion",callback);
@@ -40,20 +41,20 @@ function createChannels(cb) {
             createChannel("Development", "Meet other developers", callback);
         }
     ], cb)
-    
+
 }
 
 //the root call
 async.series([
     createChannels
-], 
+],
 function(err, results) {
     if (err) {
         console.log('Error occurred');
     }
     else {
         console.log('Success');
-        
+
     }
     mongoose.connection.close();
 });
